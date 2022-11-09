@@ -1,10 +1,11 @@
 import Users from "../models/UserModel.js";
 import argon2 from "argon2";
 
+// get user
 export const getUsers = async (req, res) => {
   try {
     const response = await Users.findAll({
-      attributes: ["uuid", "name", "email", "role"],
+      attributes: ["uuid", "name", "email", "roleId"],
     });
     res.status(200).json(response);
   } catch (error) {
@@ -12,10 +13,11 @@ export const getUsers = async (req, res) => {
   }
 };
 
+// get user by id
 export const getUserById = async (req, res) => {
   try {
     const response = await Users.findOne({
-      attributes: ["uuid", "name", "email", "role"],
+      attributes: ["uuid", "name", "email", "roleId"],
       where: {
         uuid: req.params.id,
       },
@@ -26,16 +28,19 @@ export const getUserById = async (req, res) => {
   }
 };
 
+// create user // done
 export const createUser = async (req, res) => {
-  const { name, email, password, confirmPassword, role } = req.body;
+  const { name, email, phoneNumber, password, confirmPassword, role, gender } = req.body;
   if (password !== confirmPassword) return res.status(400).json({ msg: "password dan confirm password tidak cocok" });
   const hashPassword = await argon2.hash(password);
   try {
     await Users.create({
       name: name,
       email: email,
+      phoneNumber: phoneNumber,
       password: hashPassword,
-      role: role,
+      roleId: role,
+      gender: gender,
     });
     res.status(201).json({ msg: "Register berhasil" });
   } catch (error) {
@@ -65,7 +70,7 @@ export const updateUser = async (req, res) => {
         name: name,
         email: email,
         password: hashPassword,
-        role: role,
+        roleId: role,
       },
       {
         where: {

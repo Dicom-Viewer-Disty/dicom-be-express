@@ -1,11 +1,9 @@
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
-import Patients from "./PatientModel.js";
-// import Users from "./UserModel.js";
 
 const { DataTypes } = Sequelize;
 
-const Dicoms = db.define("dicoms", {
+const Roles = db.define("roles", {
   uuid: {
     type: DataTypes.STRING,
     defaultValue: DataTypes.UUIDV4,
@@ -14,16 +12,15 @@ const Dicoms = db.define("dicoms", {
       notEmpty: true,
     },
   },
-  dicomFile: {
+  role: {
     type: DataTypes.STRING,
-    allowNull: true,
-    defaultValue: null,
+    allowNull: false,
     validate: {
       notEmpty: true,
     },
   },
-  patientId: {
-    type: DataTypes.INTEGER,
+  description: {
+    type: DataTypes.STRING,
     allowNull: false,
     validate: {
       notEmpty: true,
@@ -31,7 +28,4 @@ const Dicoms = db.define("dicoms", {
   },
 });
 
-Patients.hasMany(Dicoms);
-Dicoms.belongsTo(Patients, { foreignKey: "patientId" });
-
-export default Dicoms;
+export default Roles;

@@ -6,7 +6,7 @@ import { Op } from "sequelize";
 export const getPatients = async (req, res) => {
   try {
     let response;
-    if (req.role === "admin") {
+    if (req.role === 1) {
       response = await Patients.findAll({
         attributes: ["uuid", "name", "birthDate", "gender", "profileImage", "phoneNumber", "email", "address", "disease", "note", "dicomFile"],
         // ada relasi
@@ -82,7 +82,7 @@ export const getPatientById = async (req, res) => {
 };
 
 export const createPatient = async (req, res) => {
-  if (req.files === null) return res.status(400).json({ msg: "No File Uploaded" });
+  // if (req.files === null) return res.status(400).json({ msg: "No File Uploaded" });
   const medicalRecordNumber = req.body.medicalRecordNumber;
   const name = req.body.name;
   const birthDate = req.body.birthDate;

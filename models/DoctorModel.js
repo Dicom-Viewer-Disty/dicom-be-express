@@ -1,9 +1,10 @@
 import { Sequelize } from "sequelize";
 import db from "../config/Database.js";
-import Roles from "./RoleModel.js";
+import Users from "../models/UserModel.js";
+
 const { DataTypes } = Sequelize;
 
-const Users = db.define("users", {
+const Doctors = db.define("doctors", {
   uuid: {
     type: DataTypes.STRING,
     defaultValue: DataTypes.UUIDV4,
@@ -12,7 +13,14 @@ const Users = db.define("users", {
       notEmpty: true,
     },
   },
-  name: {
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
+  },
+  strNumber: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
@@ -20,46 +28,48 @@ const Users = db.define("users", {
       len: [3, 100],
     },
   },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: true,
-      isEmail: true,
-    },
-  },
-  phoneNumber: {
+  birthDate: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
       notEmpty: true,
     },
   },
-  gender: {
+  address: {
     type: DataTypes.STRING,
     allowNull: false,
     validate: {
       notEmpty: true,
+      len: [3, 100],
     },
   },
-  password: {
+  specialization: {
     type: DataTypes.STRING,
-    allowNull: false,
+    defaultValue: null,
+    allowNull: true,
     validate: {
       notEmpty: true,
     },
   },
-  profileImage: {
+  practicePlace: {
     type: DataTypes.STRING,
-    defaultValue: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png",
-    allowNull: false,
+    defaultValue: null,
+    allowNull: true,
+    validate: {
+      notEmpty: true,
+    },
+  },
+  note: {
+    type: DataTypes.STRING,
+    defaultValue: null,
+    allowNull: true,
     validate: {
       notEmpty: true,
     },
   },
 });
 
-Roles.hasMany(Users);
-// Users.belongsTo(Roles, { foreignKey: "idRole" });
+Users.hasOne(Doctors);
+Doctors.belongsTo(Users, { foreignKey: "userId" });
 
-export default Users;
+export default Doctors;

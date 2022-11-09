@@ -108,5 +108,4 @@ const Patients = db.define("patients", {
 
 Users.hasMany(Patients);
 Patients.belongsTo(Users, { foreignKey: "userId" });
-
 export default Patients;
