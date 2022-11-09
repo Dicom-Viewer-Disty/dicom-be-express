@@ -3,7 +3,7 @@ import { getPatients, getPatientById, createPatient, updatePatient, deletePatien
 import { verifyUser } from "../middleware/AuthUser.js";
 const router = express.Router();
 
-router.get("/patients", verifyUser, getPatients);
+router.get("/patient", verifyUser, getPatients);
 router.get("/patient/:id", verifyUser, getPatientById);
 router.post("/patient", verifyUser, createPatient);
 router.patch("/patient/:id", verifyUser, updatePatient);

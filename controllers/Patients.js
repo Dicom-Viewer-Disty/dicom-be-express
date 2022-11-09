@@ -3,28 +3,30 @@ import User from "../models/UserModel.js";
 import path from "path";
 import fs from "fs";
 import { Op } from "sequelize";
+
+// get all patients
 export const getPatients = async (req, res) => {
   try {
     let response;
-    if (req.role === 1) {
+    if (req.roleId === 1) {
       response = await Patients.findAll({
-        attributes: ["uuid", "name", "birthDate", "gender", "profileImage", "phoneNumber", "email", "address", "disease", "note", "dicomFile"],
+        attributes: ["uuid", "name", "birthDate", "gender", "profileImage", "phoneNumber", "email", "address", "disease", "note", "createdAt", "updatedAt"],
         // ada relasi
         include: [
           {
             model: User,
-            attributes: ["name", "email", "role"],
+            attributes: ["name", "email", "roleId"],
           },
         ],
       });
     } else {
       response = await Patients.findAll({
-        attributes: ["uuid", "name", "birthDate", "gender", "profileImage", "phoneNumber", "email", "address", "disease", "note", "dicomFile"],
+        attributes: ["uuid", "name", "birthDate", "gender", "profileImage", "phoneNumber", "email", "address", "disease", "note", "createdAt", "updatedAt"],
         where: { userId: req.userId },
         include: [
           {
             model: User,
-            attributes: ["name", "email", "role"],
+            attributes: ["name", "email", "roleId"],
           },
         ],
       });
@@ -36,6 +38,7 @@ export const getPatients = async (req, res) => {
   }
 };
 
+// single patient
 export const getPatientById = async (req, res) => {
   try {
     const patient = await Patients.findOne({
@@ -43,12 +46,12 @@ export const getPatientById = async (req, res) => {
         uuid: req.params.id,
       },
     });
-    if (!patient) return res.status(404).json({ msg: "data tidak ditemukan" });
+    if (!patient) return res.status(404).json({ msg: "data not found" });
 
     let response;
-    if (req.role === "admin") {
+    if (req.roleId === 1) {
       response = await Patients.findOne({
-        attributes: ["uuid", "name", "birthDate", "gender", "profileImage", "phoneNumber", "email", "address", "disease", "note", "dicomFile"],
+        attributes: ["uuid", "name", "birthDate", "gender", "profileImage", "phoneNumber", "email", "address", "disease", "note", "createdAt", "updatedAt"],
         where: {
           id: patient.id,
         },
@@ -56,20 +59,20 @@ export const getPatientById = async (req, res) => {
         include: [
           {
             model: User,
-            attributes: ["name", "email", "role"],
+            attributes: ["name", "email", "roleId"],
           },
         ],
       });
     } else {
       response = await Patients.findOne({
-        attributes: ["uuid", "name", "birthDate", "gender", "profileImage", "phoneNumber", "email", "address", "disease", "note", "dicomFile"],
+        attributes: ["uuid", "name", "birthDate", "gender", "profileImage", "phoneNumber", "email", "address", "disease", "note", "createdAt", "updatedAt"],
         where: {
           [Op.and]: [{ id: patient.id }, { userId: req.userId }],
         },
         include: [
           {
             model: User,
-            attributes: ["name", "email", "role"],
+            attributes: ["name", "email", "roleId"],
           },
         ],
       });
@@ -81,6 +84,7 @@ export const getPatientById = async (req, res) => {
   }
 };
 
+// create patient
 export const createPatient = async (req, res) => {
   // if (req.files === null) return res.status(400).json({ msg: "No File Uploaded" });
   const medicalRecordNumber = req.body.medicalRecordNumber;
@@ -93,30 +97,83 @@ export const createPatient = async (req, res) => {
   const address = req.body.address;
   const disease = req.body.disease;
   const note = req.body.note;
-  const dicomFile = req.files.dicomFile;
+  // const dicomFile = req.files.dicomFile;
 
-  const fileSizeDicom = dicomFile.data.length;
-  const extDicom = path.extname(dicomFile.name);
-  const fileNameDicom = dicomFile.md5 + extDicom;
+  // const fileSizeDicom = dicomFile.data.length;
+  // const extDicom = path.extname(dicomFile.name);
+  // const fileNameDicom = dicomFile.md5 + extDicom;
 
-  const dicomFileUrl = `${req.protocol}://${req.get("host")}/images/${fileNameDicom}`;
+  // const dicomFileUrl = `${req.protocol}://${req.get("host")}/images/${fileNameDicom}`;
 
   const fileSizeProfile = profileImage.data.length;
   const extProfile = path.extname(profileImage.name);
   const fileNameProfile = profileImage.md5 + extProfile;
 
-  const profileImageUrl = `${req.protocol}://${req.get("host")}/images/${fileNameProfile}`;
-  const allowedType = [".png", ".jpg", ".jpeg", ".dcm"];
+  const profileImageUrl = `images/${fileNameProfile}`;
+  const allowedType = [".png", ".jpg", ".jpeg"];
 
   // if (!allowedType.includes(ext.toLowerCase())) return res.status(422).json({ msg: "Invalid Images" });
-  if (fileSizeDicom > 20000000 || fileSizeProfile > 20000000) return res.status(422).json({ msg: "Image must be less than 20 MB" });
+  if (fileSizeProfile > 20000000) return res.status(422).json({ msg: "Image must be less than 20 MB" });
 
   // const { name, email } = req.body;
-  dicomFile.mv(`./public/images/${fileNameDicom}`, async (err) => {
-    profileImage.mv(`./public/images/${fileNameProfile}`, async (err) => {
-      if (err) return res.status(500).json({ msg: err.message });
-      try {
-        await Patients.create({
+  profileImage.mv(`./public/images/${fileNameProfile}`, async (err) => {
+    if (err) return res.status(500).json({ msg: err.message });
+    try {
+      await Patients.create({
+        name: name,
+        medicalRecordNumber: medicalRecordNumber,
+        birthDate: birthDate,
+        gender: gender,
+        profileImage: profileImageUrl,
+        phoneNumber: phoneNumber,
+        email: email,
+        address: address,
+        disease: disease,
+        note: note,
+        userId: req.userId,
+      });
+      res.status(201).json({ msg: "patient created succesfull" });
+    } catch (error) {
+      res.status(500).json({ msg: error.message });
+    }
+  });
+};
+
+// update patients
+export const updatePatient = async (req, res) => {
+  try {
+    const patient = await Patients.findOne({
+      where: {
+        uuid: req.params.id,
+      },
+    });
+    if (!patient) return res.status(404).json({ msg: "Data not found" });
+
+    const medicalRecordNumber = req.body.medicalRecordNumber;
+    const name = req.body.name;
+    const birthDate = req.body.birthDate;
+    const gender = req.body.gender;
+    const profileImage = req.files.profileImage;
+    const phoneNumber = req.body.phoneNumber;
+    const email = req.body.email;
+    const address = req.body.address;
+    const disease = req.body.disease;
+    const note = req.body.note;
+
+    const fileSizeProfile = profileImage.data.length;
+    const extProfile = path.extname(profileImage.name);
+    const fileNameProfile = profileImage.md5 + extProfile;
+
+    const profileImageUrl = `images/${fileNameProfile}`;
+    const allowedType = [".png", ".jpg", ".jpeg"];
+
+    if (fileSizeProfile > 20000000) return res.status(422).json({ msg: "Image must be less than 20 MB" });
+
+    // const { name, email } = req.body;
+    profileImage.mv(`./public/images/${fileNameProfile}`, async (err) => {});
+    if (req.roleId === 1) {
+      await Patients.update(
+        {
           name: name,
           medicalRecordNumber: medicalRecordNumber,
           birthDate: birthDate,
@@ -127,29 +184,8 @@ export const createPatient = async (req, res) => {
           address: address,
           disease: disease,
           note: note,
-          dicomFile: dicomFileUrl,
           userId: req.userId,
-        });
-        res.status(201).json({ msg: "patient created succesfull" });
-      } catch (error) {
-        res.status(500).json({ msg: error.message });
-      }
-    });
-  });
-};
-
-export const updatePatient = async (req, res) => {
-  try {
-    const patient = await Patients.findOne({
-      where: {
-        uuid: req.params.id,
-      },
-    });
-    if (!patient) return res.status(404).json({ msg: "Data tidak ditemukan" });
-    const { name, email } = req.body;
-    if (req.role === "admin") {
-      await Patients.update(
-        { name, email },
+        },
         {
           where: {
             id: patient.id,
@@ -157,9 +193,21 @@ export const updatePatient = async (req, res) => {
         }
       );
     } else {
-      if (req.userId !== patient.userId) return res.status(403).json({ msg: "Akses terlarang" });
+      if (req.userId !== patient.userId) return res.status(403).json({ msg: "Access denied" });
       await Patients.update(
-        { name, email },
+        {
+          name: name,
+          medicalRecordNumber: medicalRecordNumber,
+          birthDate: birthDate,
+          gender: gender,
+          profileImage: profileImageUrl,
+          phoneNumber: phoneNumber,
+          email: email,
+          address: address,
+          disease: disease,
+          note: note,
+          userId: req.userId,
+        },
         {
           where: {
             [Op.and]: [{ id: patient.id }, { userId: req.userId }],
@@ -173,6 +221,7 @@ export const updatePatient = async (req, res) => {
   }
 };
 
+// delete
 export const deletePatient = async (req, res) => {
   try {
     const patient = await Patients.findOne({
@@ -180,15 +229,15 @@ export const deletePatient = async (req, res) => {
         uuid: req.params.id,
       },
     });
-    if (!patient) return res.status(404).json({ msg: "Data tidak ditemukan" });
-    if (req.role === "admin") {
+    if (!patient) return res.status(404).json({ msg: "Data not found" });
+    if (req.roleId === 1) {
       await Patients.destroy({
         where: {
           id: patient.id,
         },
       });
     } else {
-      if (req.userId !== patient.userId) return res.status(403).json({ msg: "Akses terlarang" });
+      if (req.userId !== patient.userId) return res.status(403).json({ msg: "access forbidden" });
       await Patients.destroy({
         where: {
           [Op.and]: [{ id: patient.id }, { userId: req.userId }],

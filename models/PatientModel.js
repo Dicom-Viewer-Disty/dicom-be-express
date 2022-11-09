@@ -15,7 +15,8 @@ const Patients = db.define("patients", {
   },
   medicalRecordNumber: {
     type: DataTypes.STRING,
-    allowNull: false,
+    defaultValue: null,
+    allowNull: true,
     validate: {
       notEmpty: true,
       len: [3, 100],
@@ -31,6 +32,7 @@ const Patients = db.define("patients", {
   },
   birthDate: {
     type: DataTypes.DATE,
+    defaultValue: null,
     allowNull: true,
     validate: {
       notEmpty: true,
@@ -38,7 +40,7 @@ const Patients = db.define("patients", {
   },
   gender: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
     validate: {
       notEmpty: true,
     },
@@ -46,29 +48,31 @@ const Patients = db.define("patients", {
   profileImage: {
     type: DataTypes.STRING,
     defaultValue: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png",
-    allowNull: false,
+    allowNull: true,
     validate: {
       notEmpty: true,
     },
   },
   phoneNumber: {
     type: DataTypes.STRING,
-    allowNull: false,
+    defaultValue: null,
+    allowNull: true,
     validate: {
       notEmpty: true,
     },
   },
   email: {
     type: DataTypes.STRING,
-    allowNull: false,
+    defaultValue: null,
+    allowNull: true,
     validate: {
       notEmpty: true,
-      isEmail: true,
     },
   },
   address: {
     type: DataTypes.STRING,
-    allowNull: false,
+    defaultValue: null,
+    allowNull: true,
     validate: {
       notEmpty: true,
     },
@@ -89,14 +93,14 @@ const Patients = db.define("patients", {
       notEmpty: true,
     },
   },
-  dicomFile: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    defaultValue: null,
-    validate: {
-      notEmpty: true,
-    },
-  },
+  // dicomFile: {
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  //   defaultValue: null,
+  //   validate: {
+  //     notEmpty: true,
+  //   },
+  // },
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,

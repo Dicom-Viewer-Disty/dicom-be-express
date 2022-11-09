@@ -48,7 +48,7 @@ app.use(express.json());
 app.use(FileUpload());
 app.use(express.static("public"));
 app.use("/api/v1", UserRoute);
-app.use(PatientRoute);
+app.use("/api/v1", PatientRoute);
 app.use("/api/v1", AuthRoute);
 app.use(RoleRoute);
 app.use(DicomRoute);
