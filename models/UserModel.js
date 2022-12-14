@@ -23,6 +23,7 @@ const Users = db.define("users", {
   email: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
     validate: {
       notEmpty: true,
       isEmail: true,
@@ -31,6 +32,7 @@ const Users = db.define("users", {
   phoneNumber: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
     validate: {
       notEmpty: true,
     },
@@ -60,6 +62,6 @@ const Users = db.define("users", {
 });
 
 Roles.hasMany(Users);
-// Users.belongsTo(Roles, { foreignKey: "idRole" });
+Users.belongsTo(Roles, { foreignKey: "roleId" });
 
 export default Users;

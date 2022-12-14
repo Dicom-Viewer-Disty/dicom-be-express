@@ -1,12 +1,12 @@
 import express from "express";
-import { createDoctor } from "../controllers/Doctors.js";
+import { createDoctor, getDoctorById, deleteDoctor, updateDoctor, getAllDoctor } from "../controllers/Doctors.js";
 import { verifyUser } from "../middleware/AuthUser.js";
 const router = express.Router();
 
 router.post("/doctor", verifyUser, createDoctor);
-// router.get("/dicom/:id", verifyUser, getPatientById);
-// router.post("/dicom", verifyUser, createPatient);
-// router.patch("/dicom/:id", verifyUser, updatePatient);
-// router.delete("/dicom/:id", verifyUser, deletePatient);
+router.get("/doctor/:id", verifyUser, getDoctorById);
+router.get("/doctor", verifyUser, getAllDoctor);
+router.patch("/doctor/:id", verifyUser, updateDoctor);
+router.delete("/doctor/:id", verifyUser, deleteDoctor);
 
 export default router;

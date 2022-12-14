@@ -13,13 +13,14 @@ const Permissions = db.define("permissions", {
       notEmpty: true,
     },
   },
-  roleId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    validate: {
-      notEmpty: true,
-    },
-  },
+  // roleId: {
+  //   type: DataTypes.INTEGER,
+  //   allowNull: false,
+  //   unique: true,
+  //   validate: {
+  //     notEmpty: true,
+  //   },
+  // },
   canCreateUser: {
     type: DataTypes.BOOLEAN,
     defaultValue: false,

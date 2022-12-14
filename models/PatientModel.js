@@ -15,8 +15,8 @@ const Patients = db.define("patients", {
   },
   medicalRecordNumber: {
     type: DataTypes.STRING,
-    defaultValue: null,
-    allowNull: true,
+    allowNull: false,
+    unique: true,
     validate: {
       notEmpty: true,
       len: [3, 100],
@@ -48,7 +48,7 @@ const Patients = db.define("patients", {
   profileImage: {
     type: DataTypes.STRING,
     defaultValue: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png",
-    allowNull: true,
+    allowNull: false,
     validate: {
       notEmpty: true,
     },

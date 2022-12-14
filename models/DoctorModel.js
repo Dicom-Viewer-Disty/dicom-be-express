@@ -16,13 +16,16 @@ const Doctors = db.define("doctors", {
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    unique: true,
     validate: {
       notEmpty: true,
     },
   },
   strNumber: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: null,
+    unique: true,
     validate: {
       notEmpty: true,
       len: [3, 100],
@@ -30,14 +33,16 @@ const Doctors = db.define("doctors", {
   },
   birthDate: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: null,
     validate: {
       notEmpty: true,
     },
   },
   address: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
+    defaultValue: null,
     validate: {
       notEmpty: true,
       len: [3, 100],

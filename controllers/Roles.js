@@ -1,4 +1,6 @@
+import Dicoms from "../models/DicomModel.js";
 import Roles from "../models/RoleModel.js";
+import Users from "../models/UserModel.js";
 
 // crete role
 export const createRole = async (req, res) => {
@@ -18,7 +20,7 @@ export const createRole = async (req, res) => {
 export const getRole = async (req, res) => {
   try {
     const response = await Roles.findAll({
-      attributes: ["uuid", "role", "description"],
+      attributes: ["id", "uuid", "role", "description"],
     });
     res.status(200).json(response);
   } catch (error) {
@@ -30,9 +32,9 @@ export const getRole = async (req, res) => {
 export const getRoleById = async (req, res) => {
   try {
     const response = await Roles.findOne({
-      attributes: ["uuid", "role", "description"],
+      attributes: ["id", "uuid", "role", "description"],
       where: {
-        uuid: req.params.id,
+        id: req.params.id,
       },
     });
     res.status(200).json(response);
@@ -45,7 +47,7 @@ export const getRoleById = async (req, res) => {
 export const updateRole = async (req, res) => {
   const roleId = await Roles.findOne({
     where: {
-      uuid: req.params.id,
+      id: req.params.id,
     },
   });
 
@@ -73,20 +75,32 @@ export const updateRole = async (req, res) => {
 export const deleteRole = async (req, res) => {
   const roleId = await Roles.findOne({
     where: {
-      uuid: req.params.id,
+      id: req.params.id,
     },
   });
 
+  const user = await Users.findOne({
+    where: {
+      roleId: req.params.id,
+    },
+  });
+
+  // if (user) return res.status(503).json({ msg: "role can't deleted because has some users" });
+
   if (!roleId) return res.status(404).json({ msg: "role not found" });
 
-  try {
-    await Roles.destroy({
-      where: {
-        id: roleId.id,
-      },
-    });
-    res.status(200).json({ msg: "delete success" });
-  } catch (error) {
-    res.status(500).json({ msg: res.message });
+  if (!user) {
+    try {
+      await Roles.destroy({
+        where: {
+          id: roleId.id,
+        },
+      });
+      res.status(200).json({ msg: "delete success" });
+    } catch (error) {
+      res.status(500).json({ msg: res.message });
+    }
+  } else {
+    return res.status(503).json({ msg: "role can't deleted because has some users" });
   }
 };

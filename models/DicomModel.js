@@ -16,8 +16,7 @@ const Dicoms = db.define("dicoms", {
   },
   dicomFile: {
     type: DataTypes.STRING,
-    allowNull: true,
-    defaultValue: null,
+    allowNull: false,
     validate: {
       notEmpty: true,
     },

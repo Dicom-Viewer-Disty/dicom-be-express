@@ -21,9 +21,9 @@ const store = new sessionStore({
   db: db,
 });
 
-(async () => {
-  await db.sync();
-})();
+// (async () => {
+//   await db.sync();
+// })();
 
 app.use(
   session({
@@ -37,12 +37,20 @@ app.use(
   })
 );
 
-app.use(
-  cors({
-    credentials: true,
-    origin: "http://localhost:3001",
-  })
-);
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: "http://localhost:3001",
+//   })
+// );
+
+const corsConfig = {
+  origin: true,
+  credentials: true,
+};
+
+app.use(cors(corsConfig));
+app.options("*", cors(corsConfig));
 
 app.use(express.json());
 app.use(FileUpload());
@@ -51,8 +59,8 @@ app.use("/api/v1", UserRoute);
 app.use("/api/v1", PatientRoute);
 app.use("/api/v1", AuthRoute);
 app.use(RoleRoute);
-app.use(DicomRoute);
-app.use(DoctorRoute);
+app.use("/api/v1", DicomRoute);
+app.use("/api/v1", DoctorRoute);
 app.use(PermissionRoute);
 app.use(DicomSessionRoute);
 // store.sync();

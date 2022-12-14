@@ -2,14 +2,14 @@ import User from "../models/UserModel.js";
 
 export const verifyUser = async (req, res, next) => {
   if (!req.session.userId) {
-    return res.status(401).json({ msg: "Mohon login ke akun Anda!" });
+    return res.status(401).json({ msg: "Please login to your account!" });
   }
   const user = await User.findOne({
     where: {
       uuid: req.session.userId,
     },
   });
-  if (!user) return res.status(404).json({ msg: "User tidak ditemukan" });
+  if (!user) return res.status(404).json({ msg: "User not found" });
   req.userId = user.id;
   req.roleId = user.roleId;
   next();
@@ -21,7 +21,7 @@ export const adminOnly = async (req, res, next) => {
       uuid: req.session.userId,
     },
   });
-  if (!user) return res.status(404).json({ msg: "User tidak ditemukan" });
-  if (user.roleId !== 1) return res.status(403).json({ msg: "Akses terlarang" });
+  if (!user) return res.status(404).json({ msg: "User not found" });
+  if (user.roleId !== 1) return res.status(403).json({ msg: "forbiden access" });
   next();
 };
