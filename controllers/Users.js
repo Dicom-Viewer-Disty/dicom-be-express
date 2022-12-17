@@ -83,20 +83,20 @@ export const updateUser = async (req, res) => {
   // }
 
   if (!user) return res.status(404).json({ msg: "user not found" });
-  const { name, email, password, gender, phoneNumber, confirmPassword, role } = req.body;
-  let hashPassword;
-  if (password === "" || password === null) {
-    hashPassword = user.password;
-  } else {
-    hashPassword = await argon2.hash(password);
-  }
-  if (password !== confirmPassword) return res.status(400).json({ msg: "password and password confirmation doesnt match" });
+  const { name, email,  gender, phoneNumber, confirmPassword, role } = req.body;
+  // let hashPassword;
+  // if (password === "" || password === null) {
+  //   hashPassword = user.password;
+  // } else {
+  //   hashPassword = await argon2.hash(password);
+  // }
+  // if (password !== confirmPassword) return res.status(400).json({ msg: "password and password confirmation doesnt match" });
   try {
     await Users.update(
       {
         name: name,
         email: email,
-        password: hashPassword,
+        // password: hashPassword,
         gender: gender,
         phoneNumber: phoneNumber,
         roleId: role,
