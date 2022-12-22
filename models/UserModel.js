@@ -53,7 +53,7 @@ const Users = db.define("users", {
   },
   profileImage: {
     type: DataTypes.STRING,
-    defaultValue: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png",
+    defaultValue: "images/init-profile.png",
     allowNull: false,
     validate: {
       notEmpty: true,

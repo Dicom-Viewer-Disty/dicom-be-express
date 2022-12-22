@@ -108,7 +108,6 @@ export const createPatient = async (req, res) => {
   const name = req.body.name;
   const birthDate = req.body.birthDate;
   const gender = req.body.gender;
-
   const phoneNumber = req.body.phoneNumber;
   const email = req.body.email;
   const address = req.body.address;
